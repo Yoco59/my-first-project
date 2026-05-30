@@ -5,18 +5,44 @@ from datetime import datetime
 FILE_NAME = "tasks.json"
 
 
+CORRUPTED_FILE_NAME = "tasks_corrupted.json"
+
+
 def load_tasks_from_file():
     # os.path.exists בודק אם הנתיב שמסרנו לו מצביע על קובץ או תיקייה קיימים בדיסק.
     # הפונקציה מחזירה True אם הקובץ קיים, ו-False אם לא —
     # כך אנו מונעים שגיאת FileNotFoundError לפני שבכלל ניסינו לפתוח אותו.
-    if os.path.exists(FILE_NAME):
+    if not os.path.exists(FILE_NAME):
+        print(f"📂 קובץ {FILE_NAME} לא נמצא — מתחיל רשימה חדשה.\n")
+        return []
+
+    try:
         with open(FILE_NAME, "r", encoding="utf-8") as f:
+            # json.load קורא את תוכן הקובץ וממיר אותו לאובייקט Python.
+            # אם הקובץ הושחת (תחביר JSON שגוי), השורה הזו תזרוק JSONDecodeError.
+            # אם אין הרשאת קריאה לקובץ, היא תזרוק PermissionError.
+            # שתי השגיאות נתפסות בבלוק ה-except מטה — התוכנית לא תקרוס.
             tasks = json.load(f)
         print(f"📂 נטענו {len(tasks)} משימות קיימות מתוך {FILE_NAME}\n")
         return tasks
-    # אם הקובץ לא נמצא — מחזירים רשימה ריקה ומתחילים מאפס
-    print(f"📂 קובץ {FILE_NAME} לא נמצא — מתחיל רשימה חדשה.\n")
-    return []
+
+    except json.JSONDecodeError:
+        # JSONDecodeError נזרקת כשמבנה ה-JSON פגום (למשל: סוגרים חסרים, פסיק עודף).
+        # os.rename מגבה את הקובץ הפגום בשם חדש לפני שמאתחלים מחדש —
+        # כך לא מאבדים את הנתונים המקוריים ואפשר לבדוק מה קרה מאוחר יותר.
+        print(f"⚠ אזהרה: הקובץ {FILE_NAME} פגום ולא ניתן לקריאה.")
+        os.rename(FILE_NAME, CORRUPTED_FILE_NAME)
+        print(f"💾 הקובץ הפגום גובה אוטומטית ל-{CORRUPTED_FILE_NAME}")
+        print("🔄 מאתחל רשימת משימות חדשה ונקייה...\n")
+        return []
+
+    except PermissionError:
+        # PermissionError נזרקת כשלתהליך Python אין הרשאת קריאה לקובץ
+        # (למשל: הקובץ נעול על ידי תוכנה אחרת, או הרשאות מערכת הפעלה שגויות).
+        # במקרה זה לא מנסים לגבות — אולי גם כתיבה חסומה — פשוט מתחילים מאפס.
+        print(f"⚠ אזהרה: אין הרשאת גישה לקובץ {FILE_NAME}.")
+        print("🔄 מאתחל רשימת משימות חדשה ונקייה...\n")
+        return []
 
 
 def save_tasks_to_file(tasks):
