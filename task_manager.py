@@ -90,9 +90,10 @@ def display_tasks(tasks):
     print("\n--- רשימת המשימות הממוינת ---")
     sorted_tasks = sorted(tasks, key=lambda x: x["priority"], reverse=True)
     for index, task in enumerate(sorted_tasks, 1):
-        status = "Urgent" if task["priority"] == 1 else "Medium" if task["priority"] == 2 else "Low"
+        priority_label = "Urgent" if task["priority"] == 1 else "Medium" if task["priority"] == 2 else "Low"
+        status = task.get("status", "Pending")
         created = task.get("created_at", "לא ידוע")
-        print(f"{index}. [{status}] {task['name']}  |  נוצר: {created}")
+        print(f"{index}. [{status}] [{priority_label}] {task['name']}  |  נוצר: {created}")
     input("\nלחץ Enter כדי לחזור לתפריט הראשי...")
 
 
@@ -118,6 +119,7 @@ def add_task(tasks):
     tasks.append({
         "name": task_name,
         "priority": priority,
+        "status": "Pending",
         "created_at": datetime.now().isoformat()
     })
     print(f"✔ המשימה '{task_name}' נקלטה במערכת.")
