@@ -80,7 +80,8 @@ def show_menu():
     print("[1] הצגת כל המשימות")
     print("[2] הוספת משימה חדשה")
     print("[3] סימון משימה כבוצעה")
-    print("[4] יציאה מהתוכנית")
+    print("[4] מחיקת משימה מהמערכת")
+    print("[5] יציאה מהתוכנית")
     print("=============================")
 
 
@@ -116,6 +117,30 @@ def complete_task(tasks):
             print(f"⚠ מספר {choice} אינו קיים ברשימה — יש לבחור בין 1 ל-{len(tasks)}.")
     except ValueError:
         # מונע קריסה אם המשתמש הקליד טקסט במקום מספר
+        print("⚠ קלט לא חוקי — יש להקיש מספר משימה.")
+
+
+def delete_task(tasks):
+    if not tasks:
+        print("\nאין משימות למחיקה.")
+        return
+    print("\n--- בחר משימה למחיקה ---")
+    for index, task in enumerate(tasks, 1):
+        priority_label = "Urgent" if task["priority"] == 1 else "Medium" if task["priority"] == 2 else "Low"
+        print(f"{index}. [{task.get('status', 'Pending')}] [{priority_label}] {task['name']}")
+    try:
+        choice = int(input("\nהקש את מספר המשימה למחיקה: "))
+        if not (1 <= choice <= len(tasks)):
+            print(f"⚠ מספר {choice} אינו קיים — יש לבחור בין 1 ל-{len(tasks)}.")
+            return
+        task_name = tasks[choice - 1]["name"]
+        confirm = input(f"האם אתה בטוח שברצונך למחוק את '{task_name}'? (y/n): ").strip().lower()
+        if confirm == "y":
+            tasks.pop(choice - 1)
+            print(f"✔ המשימה '{task_name}' נמחקה מהמערכת.")
+        else:
+            print("המחיקה בוטלה.")
+    except ValueError:
         print("⚠ קלט לא חוקי — יש להקיש מספר משימה.")
 
 
@@ -167,8 +192,10 @@ while True:
     elif choice == 3:
         complete_task(tasks)
     elif choice == 4:
+        delete_task(tasks)
+    elif choice == 5:
         save_tasks_to_file(tasks)
         print("להתראות!")
         break
     else:
-        print("⚠ בחירה לא חוקית — אנא בחר 1, 2, 3 או 4.")
+        print("⚠ בחירה לא חוקית — אנא בחר 1, 2, 3, 4 או 5.")
