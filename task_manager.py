@@ -9,11 +9,20 @@ from datetime import datetime
 # שכבת טלמטריה — FileHandler בלבד, ללא StreamHandler.
 # כך כל הפלט הטכני הולך ישירות לדיסק ואינו מופיע בטרמינל.
 # ─────────────────────────────────────────────
-_logger = logging.getLogger("TaskManager")
+# system.log — שגיאות טכניות בלבד (infrastructure, I/O, exceptions)
+_logger = logging.getLogger("TaskManager.System")
 _logger.setLevel(logging.DEBUG)
-_handler = logging.FileHandler("system.log", encoding="utf-8")
-_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
-_logger.addHandler(_handler)
+_sys_handler = logging.FileHandler("system.log", encoding="utf-8")
+_sys_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+_logger.addHandler(_sys_handler)
+
+# audit.log — אירועים עסקיים בלבד, שורה אחת = אובייקט JSON אחד
+# הפורמט %(message)s בלבד — ה-JSON עצמו מכיל את ה-timestamp
+_audit_logger = logging.getLogger("TaskManager.Audit")
+_audit_logger.setLevel(logging.INFO)
+_audit_handler = logging.FileHandler("audit.log", encoding="utf-8")
+_audit_handler.setFormatter(logging.Formatter("%(message)s"))
+_audit_logger.addHandler(_audit_handler)
 
 FILE_NAME = "tasks.json"
 TEMP_FILE_NAME = "tasks.tmp"
@@ -169,6 +178,12 @@ class TaskEngine:
 
     # ─── ממשק CRUD פנימי — כל גישה לרשימה עוברת דרך כאן ─────────────────────
 
+    def next_id(self) -> int:
+        """מחזיר את ה-ID הבא — max קיים + 1, או 1 אם הרשימה ריקה."""
+        if not self._tasks:
+            return 1
+        return max(t.get("id", 0) for t in self._tasks) + 1
+
     def get_all(self):
         # מחזיר עותק כדי שהשכבות החיצוניות לא ישנו את הנתונים הגולמיים ישירות
         return list(self._tasks)
@@ -206,14 +221,34 @@ class TaskService:
             raise ValueError
         return priority
 
-    def build_task(self, name: str, priority: int) -> dict:
+    def build_task(self, name: str, priority: int, task_id: int) -> dict:
         # כל לוגיקת בניית מבנה הנתונים של משימה מרוכזת כאן
         return {
+            "id": task_id,
             "name": name,
             "priority": priority,
             "status": "Pending",
             "created_at": datetime.now().isoformat(),
         }
+
+    def record_audit_event(self, event_type: str, task: dict):
+        """כותב אירוע עסקי ל-audit.log בפורמט JSON קפדני — שורה אחת לאירוע.
+        כישלון בכתיבה נרשם ב-system.log ולעולם לא מפיל את התוכנית."""
+        try:
+            event = {
+                "timestamp": datetime.now().isoformat(),
+                "event": event_type,
+                "task_id": task.get("id"),
+                "data": {
+                    "title": task.get("name"),
+                    "priority": task.get("priority"),
+                    "status": task.get("status"),
+                },
+            }
+            _audit_logger.info(json.dumps(event, ensure_ascii=False))
+        except Exception as exc:
+            # כישלון audit לא יפיל את המערכת — רק יירשם בלוג הטכני
+            _logger.error(f"TaskService: audit logging failed for {event_type} — {exc}")
 
     def add(self, name: str, priority: int) -> bool:
         limit = self._engine.config.get("max_tasks_limit", 100)
@@ -224,9 +259,10 @@ class TaskService:
             )
             print(f"\n⛔ מגבלת המערכת: לא ניתן להוסיף יותר מ-{limit} משימות (הוגדר ב-config.json).")
             return False
-        task = self.build_task(name, priority)
+        task = self.build_task(name, priority, self._engine.next_id())
         self._engine.append(task)
         _logger.info(f"TaskService: new task added — name='{name}' priority={priority}")
+        self.record_audit_event("TASK_CREATED", task)
         return True
 
     def get_sorted(self) -> list:
@@ -243,14 +279,17 @@ class TaskService:
         return self._engine.get_all()
 
     def mark_completed(self, index: int):
-        name = self._engine.get_all()[index]["name"]
+        task = self._engine.get_all()[index]
         self._engine.set_status(index, "Completed")
-        _logger.info(f"TaskService: task marked completed — name='{name}'")
+        _logger.info(f"TaskService: task marked completed — name='{task['name']}'")
+        completed_task = {**task, "status": "Completed"}
+        self.record_audit_event("TASK_COMPLETED", completed_task)
 
     def delete(self, index: int):
-        name = self._engine.get_all()[index]["name"]
+        task = self._engine.get_all()[index]
         self._engine.remove_at(index)
-        _logger.info(f"TaskService: task deleted — name='{name}'")
+        _logger.info(f"TaskService: task deleted — name='{task['name']}'")
+        self.record_audit_event("TASK_DELETED", task)
 
     def save(self):
         self._engine.save_to_disk()
@@ -259,14 +298,14 @@ class TaskService:
         return self._engine.count()
 
     def format_line(self, position: int, task: dict) -> str:
-        label = self.PRIORITY_LABELS.get(task["priority"], "?")
+        label = self.PRIORITY_LABELS.get(task.get("priority"), "?")
         status = task.get("status", "Pending")
         created = task.get("created_at", "לא ידוע")
-        return f"{position}. [{status}] [{label}] {task['name']}  |  נוצר: {created}"
+        return f"{position}. [{status}] [{label}] {task.get('name', '?')}  |  נוצר: {created}"
 
     def format_short_line(self, position: int, task: dict) -> str:
-        label = self.PRIORITY_LABELS.get(task["priority"], "?")
-        return f"{position}. [{task.get('status', 'Pending')}] [{label}] {task['name']}"
+        label = self.PRIORITY_LABELS.get(task.get("priority"), "?")
+        return f"{position}. [{task.get('status', 'Pending')}] [{label}] {task.get('name', '?')}"
 
 
 # ─────────────────────────────────────────────
