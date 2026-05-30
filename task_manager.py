@@ -83,7 +83,7 @@ def show_menu():
     print("=============================")
 
 
-def show_all_tasks(tasks):
+def display_tasks(tasks):
     if not tasks:
         print("\nאין משימות להצגה.")
         return
@@ -93,6 +93,7 @@ def show_all_tasks(tasks):
         status = "Urgent" if task["priority"] == 1 else "Medium" if task["priority"] == 2 else "Low"
         created = task.get("created_at", "לא ידוע")
         print(f"{index}. [{status}] {task['name']}  |  נוצר: {created}")
+    input("\nלחץ Enter כדי לחזור לתפריט הראשי...")
 
 
 def add_task(tasks):
@@ -136,7 +137,7 @@ while True:
         continue  # חוזרים לתחילת הלולאה ומציגים את התפריט מחדש
 
     if choice == 1:
-        show_all_tasks(tasks)
+        display_tasks(tasks)
     elif choice == 2:
         add_task(tasks)
     elif choice == 3:
