@@ -79,7 +79,8 @@ def show_menu():
     print("=============================")
     print("[1] הצגת כל המשימות")
     print("[2] הוספת משימה חדשה")
-    print("[3] יציאה מהתוכנית")
+    print("[3] סימון משימה כבוצעה")
+    print("[4] יציאה מהתוכנית")
     print("=============================")
 
 
@@ -95,6 +96,27 @@ def display_tasks(tasks):
         created = task.get("created_at", "לא ידוע")
         print(f"{index}. [{status}] [{priority_label}] {task['name']}  |  נוצר: {created}")
     input("\nלחץ Enter כדי לחזור לתפריט הראשי...")
+
+
+def complete_task(tasks):
+    if not tasks:
+        print("\nאין משימות לסימון.")
+        return
+    print("\n--- בחר משימה לסימון כבוצעה ---")
+    for index, task in enumerate(tasks, 1):
+        priority_label = "Urgent" if task["priority"] == 1 else "Medium" if task["priority"] == 2 else "Low"
+        print(f"{index}. [{task.get('status', 'Pending')}] [{priority_label}] {task['name']}")
+    try:
+        choice = int(input("\nהקש את מספר המשימה: "))
+        # בדיקת טווח: המספר חייב להיות בין 1 לאורך הרשימה
+        if 1 <= choice <= len(tasks):
+            tasks[choice - 1]["status"] = "Completed"
+            print(f"✔ המשימה '{tasks[choice - 1]['name']}' סומנה כבוצעה.")
+        else:
+            print(f"⚠ מספר {choice} אינו קיים ברשימה — יש לבחור בין 1 ל-{len(tasks)}.")
+    except ValueError:
+        # מונע קריסה אם המשתמש הקליד טקסט במקום מספר
+        print("⚠ קלט לא חוקי — יש להקיש מספר משימה.")
 
 
 def add_task(tasks):
@@ -143,8 +165,10 @@ while True:
     elif choice == 2:
         add_task(tasks)
     elif choice == 3:
+        complete_task(tasks)
+    elif choice == 4:
         save_tasks_to_file(tasks)
         print("להתראות!")
         break
     else:
-        print("⚠ בחירה לא חוקית — אנא בחר 1, 2 או 3.")
+        print("⚠ בחירה לא חוקית — אנא בחר 1, 2, 3 או 4.")
