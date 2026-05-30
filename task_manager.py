@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import time
 from datetime import datetime
 
 # ─────────────────────────────────────────────
@@ -16,6 +17,14 @@ _logger.addHandler(_handler)
 FILE_NAME = "tasks.json"
 TEMP_FILE_NAME = "tasks.tmp"
 CORRUPTED_FILE_NAME = "tasks_corrupted.json"
+CONFIG_FILE = "config.json"
+
+# ברירות מחדל — בשימוש אם config.json חסר או פגום
+_DEFAULT_CONFIG = {
+    "edition": "Community",
+    "max_tasks_limit": 100,
+    "performance_tracking": False,
+}
 
 
 # ─────────────────────────────────────────────
@@ -28,7 +37,33 @@ class TaskEngine:
 
     def __init__(self):
         _logger.info("TaskEngine initializing — application startup")
+        # קונפיגורציה נטענת ראשונה — כל שאר השכבות יסתמכו עליה
+        self.config = self._load_config()
         self._tasks = self._load_from_disk()
+
+    def _load_config(self) -> dict:
+        if not os.path.exists(CONFIG_FILE):
+            _logger.warning(f"TaskEngine: {CONFIG_FILE} not found — using default config")
+            return dict(_DEFAULT_CONFIG)
+        try:
+            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                cfg = json.load(f)
+            _logger.info(
+                f"TaskEngine: config loaded — edition={cfg.get('edition')} "
+                f"max_tasks={cfg.get('max_tasks_limit')} "
+                f"perf_tracking={cfg.get('performance_tracking')}"
+            )
+            return cfg
+        except (json.JSONDecodeError, PermissionError) as exc:
+            _logger.error(f"TaskEngine: failed to load {CONFIG_FILE} ({exc}) — using defaults")
+            return dict(_DEFAULT_CONFIG)
+
+    def _is_profiling(self) -> bool:
+        # פרופיילינג פעיל רק ב-Enterprise עם הדגל מופעל
+        return (
+            self.config.get("edition") == "Enterprise"
+            and self.config.get("performance_tracking", False)
+        )
 
     def _load_from_disk(self):
         if not os.path.exists(FILE_NAME):
@@ -59,10 +94,14 @@ class TaskEngine:
     def save_to_disk(self):
         # כתיבה אטומית: קודם לקובץ זמני, ואז os.replace מחליף בפעולה אחת בלתי-ניתנת-לחלוקה.
         # כך לעולם לא יהיה קובץ חלקי אם הכתיבה תיכשל באמצע.
+        _t0 = time.perf_counter()
         with open(TEMP_FILE_NAME, "w", encoding="utf-8") as f:
             json.dump(self._tasks, f, ensure_ascii=False, indent=4)
         os.replace(TEMP_FILE_NAME, FILE_NAME)
-        _logger.info(f"TaskEngine saved {len(self._tasks)} tasks to {FILE_NAME} (atomic write)")
+        elapsed_ms = (time.perf_counter() - _t0) * 1000
+        _logger.info(f"TaskEngine saved {len(self._tasks)} tasks to {FILE_NAME} (atomic write) [{elapsed_ms:.3f}ms]")
+        if self._is_profiling():
+            print(f"  ⚡ [Enterprise] save_to_disk: {elapsed_ms:.3f}ms")
 
     # ─── ממשק CRUD פנימי — כל גישה לרשימה עוברת דרך כאן ─────────────────────
 
@@ -112,14 +151,28 @@ class TaskService:
             "created_at": datetime.now().isoformat(),
         }
 
-    def add(self, name: str, priority: int):
+    def add(self, name: str, priority: int) -> bool:
+        limit = self._engine.config.get("max_tasks_limit", 100)
+        if self._engine.count() >= limit:
+            # חסימת הוספה — המגבלה הוגדרה בקונפיגורציה, לא בקוד
+            _logger.warning(
+                f"TaskService: add blocked — reached max_tasks_limit ({limit})"
+            )
+            print(f"\n⛔ מגבלת המערכת: לא ניתן להוסיף יותר מ-{limit} משימות (הוגדר ב-config.json).")
+            return False
         task = self.build_task(name, priority)
         self._engine.append(task)
         _logger.info(f"TaskService: new task added — name='{name}' priority={priority}")
+        return True
 
     def get_sorted(self) -> list:
         # המיון מתבצע בשכבת הלוגיקה — לא ב-UI ולא במנוע הנתונים
-        return sorted(self._engine.get_all(), key=lambda t: t["priority"], reverse=True)
+        _t0 = time.perf_counter()
+        result = sorted(self._engine.get_all(), key=lambda t: t["priority"], reverse=True)
+        elapsed_ms = (time.perf_counter() - _t0) * 1000
+        if self._engine._is_profiling():
+            print(f"  ⚡ [Enterprise] get_sorted ({len(result)} tasks): {elapsed_ms:.3f}ms")
+        return result
 
     def get_for_selection(self) -> list:
         # מחזיר בסדר הקלט המקורי כדי שהאינדקס יתאים לעמדה ב-Engine
@@ -172,7 +225,10 @@ class CLIAppShell:
             print("מערכת המשימות ריקה. אין משימות שמורות בארכיון.")
         print("--- מנוע המשימות האינטראקטיבי הופעל ---")
 
-        _logger.info("CLIAppShell: event loop started")
+        edition = self._svc._engine.config.get("edition", "Community")
+        limit   = self._svc._engine.config.get("max_tasks_limit")
+        print(f"[ {edition} Edition | מגבלת משימות: {limit} ]")
+        _logger.info(f"CLIAppShell: event loop started — edition={edition}")
         # לולאת האירועים — רצה עד שהמשתמש בוחר יציאה
         while True:
             self._show_menu()
@@ -226,8 +282,8 @@ class CLIAppShell:
                 break
             except ValueError:
                 print("⚠ קלט לא חוקי — יש להזין 1, 2 או 3 בלבד.")
-        self._svc.add(name, priority)
-        print(f"✔ המשימה '{name}' נקלטה במערכת.")
+        if self._svc.add(name, priority):
+            print(f"✔ המשימה '{name}' נקלטה במערכת.")
 
     def _complete(self):
         tasks = self._svc.get_for_selection()

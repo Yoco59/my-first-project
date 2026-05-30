@@ -5,3 +5,15 @@
 2026-05-30 21:56:00,887 [INFO] TaskService: task marked completed — name='בדיקת OOP'
 2026-05-30 21:56:00,887 [INFO] TaskEngine saved 2 tasks to tasks.json (atomic write)
 2026-05-30 21:56:00,887 [INFO] CLIAppShell: application shutdown — 2 tasks saved
+2026-05-30 21:58:48,118 [INFO] TaskEngine initializing — application startup
+2026-05-30 21:58:48,118 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 21:58:48,118 [INFO] TaskEngine loaded 2 tasks from tasks.json
+2026-05-30 21:58:48,118 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 21:58:48,118 [INFO] TaskService: new task added — name='משימה א' priority=1
+2026-05-30 21:58:48,118 [INFO] TaskService: new task added — name='משימה ב' priority=2
+2026-05-30 21:58:48,118 [INFO] TaskService: new task added — name='משימה ג' priority=3
+2026-05-30 21:58:48,119 [WARNING] TaskService: add blocked — reached max_tasks_limit (5)
+2026-05-30 21:58:48,119 [WARNING] TaskService: add blocked — reached max_tasks_limit (5)
+2026-05-30 21:58:48,119 [WARNING] TaskService: add blocked — reached max_tasks_limit (5)
+2026-05-30 21:58:48,119 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.234ms]
+2026-05-30 21:58:48,119 [INFO] CLIAppShell: application shutdown — 5 tasks saved

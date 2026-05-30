@@ -1,0 +1,5 @@
+{
+  "edition": "Enterprise",
+  "max_tasks_limit": 5,
+  "performance_tracking": true
+}
