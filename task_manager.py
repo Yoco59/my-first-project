@@ -1,55 +1,42 @@
-PRIORITY_LABELS = {1: "דחוף", 2: "בינוני", 3: "נמוך"}
+# הגדרת רשימה ריקה לקליטת המשימות בזמן אמת
+tasks = []
 
-def get_priority():
-    # לולאת while מבטיחה שנחזור לשאול כל עוד הקלט לא תקין
+print("--- מנוע המשימות האינטראקטיבי הופעל ---")
+print("הקלד 'exit' בשם המשימה כדי לסיים ולראות את התוצאה הממוינת.\n")
+
+# לולאה ראשית - תמשיך לרוץ ללא הפסקה עד שתתקבל פקודת יציאה
+while True:
+    task_name = input("הכנס שם משימה: ")
+
+    # בדיקת תנאי עצירה: הפיכת הקלט לאותיות קטנות (lower) כדי לזהות גם EXIT או Exit
+    if task_name.lower() == 'exit':
+        break
+
+    # לולאה פנימית מוגנת לקליטת רמת העדיפות
     while True:
-        raw = input("  עדיפות (1=דחוף, 2=בינוני, 3=נמוך): ")
         try:
-            # try-except תופס שני סוגי שגיאות:
-            # 1. קלט שאינו מספר כלל (ValueError מ-int())
-            # 2. מספר מחוץ לטווח 1-3 (ValueError שאנחנו זורקים ידנית)
-            priority = int(raw)
-            if priority not in (1, 2, 3):
-                raise ValueError
-            return priority
+            # ניסיון להפוך את הקלט למספר שלם (Integer)
+            priority = int(input("הכנס רמת עדיפות (1 - דחוף, 2 - בינוני, 3 - נמוך): "))
+
+            # בדיקה האם המספר שהוכנס נמצא בטווח המותר (1 עד 3)
+            if priority in [1, 2, 3]:
+                break # הקלט תקין! יוצאים מהלולאה הפנימית וממשיכים למשימה הבאה
+            else:
+                print("⚠ שגיאה: יש להזין מספר בין 1 ל-3 בלבד.")
+
         except ValueError:
-            print(f"  ⚠  קלט שגוי '{raw}' — יש להזין 1, 2 או 3 בלבד.\n")
+            # מנגנון הגנה: אם המשתמש הקליד אותיות, ה-int() ייכשל והקוד יגיע לכאן במקום לקרוס
+            print("⚠ חסימת שגיאה: קלט לא חוקי! נא להזין מספר (1, 2 או 3) ולא טקסט.")
 
-def collect_tasks():
-    tasks = []
-    print("=" * 45)
-    print("   מנהל משימות — הזן משימות או 'exit' לסיום")
-    print("=" * 45)
+    # הוספת המשימה התקינה שנאספה אל מערך המשימות
+    tasks.append({"name": task_name, "priority": priority})
+    print(f"✔ המשימה '{task_name}' נקלטה במערכת.\n")
 
-    # לולאת while True רצה ללא הגבלה עד שהמשתמש מקליד 'exit'
-    while True:
-        name = input("\nשם משימה (או 'exit' לסיום): ").strip()
-        if name.lower() == "exit":
-            break
-        if not name:
-            print("  ⚠  שם המשימה לא יכול להיות ריק.")
-            continue
-        priority = get_priority()
-        tasks.append({"name": name, "priority": priority})
-        print(f"  ✓  נוספה: '{name}' [{PRIORITY_LABELS[priority]}]")
+# שלב העיבוד והמיון - מתבצע רק לאחר היציאה מהלולאה (כשהמשתמש הקליד exit)
+print("\n--- הפקת תוכנית עבודה ממוינת ---")
+sorted_tasks = sorted(tasks, key=lambda x: x["priority"])
 
-    return tasks
-
-def sort_tasks(task_list):
-    return sorted(task_list, key=lambda task: task["priority"])
-
-def print_work_plan(sorted_tasks):
-    if not sorted_tasks:
-        print("\nלא הוזנו משימות.")
-        return
-    print("\n" + "=" * 45)
-    print("        תוכנית עבודה לפי עדיפות")
-    print("=" * 45)
-    for step, task in enumerate(sorted_tasks, start=1):
-        label = PRIORITY_LABELS[task["priority"]]
-        print(f"שלב {step}: [{label}] {task['name']}")
-    print("=" * 45)
-
-tasks = collect_tasks()
-sorted_tasks = sort_tasks(tasks)
-print_work_plan(sorted_tasks)
+# הדפסת התוצאה הסופית בצורה ממוספרת
+for index, task in enumerate(sorted_tasks, 1):
+    status = "Urgent" if task["priority"] == 1 else "Medium" if task["priority"] == 2 else "Low"
+    print(f"{index}. [{status}] {task['name']}")
