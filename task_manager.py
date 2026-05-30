@@ -1,6 +1,17 @@
 import json
+import logging
 import os
 from datetime import datetime
+
+# ─────────────────────────────────────────────
+# שכבת טלמטריה — FileHandler בלבד, ללא StreamHandler.
+# כך כל הפלט הטכני הולך ישירות לדיסק ואינו מופיע בטרמינל.
+# ─────────────────────────────────────────────
+_logger = logging.getLogger("TaskManager")
+_logger.setLevel(logging.DEBUG)
+_handler = logging.FileHandler("system.log", encoding="utf-8")
+_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+_logger.addHandler(_handler)
 
 FILE_NAME = "tasks.json"
 TEMP_FILE_NAME = "tasks.tmp"
@@ -16,10 +27,12 @@ CORRUPTED_FILE_NAME = "tasks_corrupted.json"
 class TaskEngine:
 
     def __init__(self):
+        _logger.info("TaskEngine initializing — application startup")
         self._tasks = self._load_from_disk()
 
     def _load_from_disk(self):
         if not os.path.exists(FILE_NAME):
+            _logger.info(f"TaskEngine: {FILE_NAME} not found — initializing empty task list")
             print(f"📂 קובץ {FILE_NAME} לא נמצא — מתחיל רשימה חדשה.\n")
             return []
         try:
@@ -27,15 +40,18 @@ class TaskEngine:
                 # json.load ממיר את תוכן הקובץ לרשימת מילוני Python.
                 # אם הקובץ פגום, JSONDecodeError תיתפס מטה.
                 tasks = json.load(f)
+            _logger.info(f"TaskEngine loaded {len(tasks)} tasks from {FILE_NAME}")
             print(f"📂 נטענו {len(tasks)} משימות קיימות מתוך {FILE_NAME}\n")
             return tasks
         except json.JSONDecodeError:
+            _logger.error(f"TaskEngine: {FILE_NAME} is corrupted (JSONDecodeError) — backing up to {CORRUPTED_FILE_NAME}")
             print(f"⚠ אזהרה: הקובץ {FILE_NAME} פגום ולא ניתן לקריאה.")
             os.rename(FILE_NAME, CORRUPTED_FILE_NAME)
             print(f"💾 הקובץ הפגום גובה אוטומטית ל-{CORRUPTED_FILE_NAME}")
             print("🔄 מאתחל רשימת משימות חדשה ונקייה...\n")
             return []
         except PermissionError:
+            _logger.error(f"TaskEngine: PermissionError reading {FILE_NAME} — initializing empty task list")
             print(f"⚠ אזהרה: אין הרשאת גישה לקובץ {FILE_NAME}.")
             print("🔄 מאתחל רשימת משימות חדשה ונקייה...\n")
             return []
@@ -46,6 +62,7 @@ class TaskEngine:
         with open(TEMP_FILE_NAME, "w", encoding="utf-8") as f:
             json.dump(self._tasks, f, ensure_ascii=False, indent=4)
         os.replace(TEMP_FILE_NAME, FILE_NAME)
+        _logger.info(f"TaskEngine saved {len(self._tasks)} tasks to {FILE_NAME} (atomic write)")
 
     # ─── ממשק CRUD פנימי — כל גישה לרשימה עוברת דרך כאן ─────────────────────
 
@@ -98,6 +115,7 @@ class TaskService:
     def add(self, name: str, priority: int):
         task = self.build_task(name, priority)
         self._engine.append(task)
+        _logger.info(f"TaskService: new task added — name='{name}' priority={priority}")
 
     def get_sorted(self) -> list:
         # המיון מתבצע בשכבת הלוגיקה — לא ב-UI ולא במנוע הנתונים
@@ -108,10 +126,14 @@ class TaskService:
         return self._engine.get_all()
 
     def mark_completed(self, index: int):
+        name = self._engine.get_all()[index]["name"]
         self._engine.set_status(index, "Completed")
+        _logger.info(f"TaskService: task marked completed — name='{name}'")
 
     def delete(self, index: int):
+        name = self._engine.get_all()[index]["name"]
         self._engine.remove_at(index)
+        _logger.info(f"TaskService: task deleted — name='{name}'")
 
     def save(self):
         self._engine.save_to_disk()
@@ -150,12 +172,14 @@ class CLIAppShell:
             print("מערכת המשימות ריקה. אין משימות שמורות בארכיון.")
         print("--- מנוע המשימות האינטראקטיבי הופעל ---")
 
+        _logger.info("CLIAppShell: event loop started")
         # לולאת האירועים — רצה עד שהמשתמש בוחר יציאה
         while True:
             self._show_menu()
             try:
                 choice = int(input("בחר פעולה (1-5): "))
             except ValueError:
+                _logger.warning("CLIAppShell: invalid menu input — non-integer entered")
                 print("⚠ קלט לא חוקי — יש להקיש מספר בין 1 ל-5.")
                 continue
 
@@ -248,6 +272,7 @@ class CLIAppShell:
 
     def _exit(self):
         self._svc.save()
+        _logger.info(f"CLIAppShell: application shutdown — {self._svc.count()} tasks saved")
         print(f"✔ {self._svc.count()} משימות נשמרו בהצלחה לקובץ {FILE_NAME}")
         print("להתראות!")
 
