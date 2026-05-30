@@ -1,0 +1,4 @@
+{"timestamp": "2026-05-30T22:11:21.011325", "event": "TASK_CREATED", "task_id": 1, "data": {"title": "משימת אודיט א", "priority": 1, "status": "Pending"}}
+{"timestamp": "2026-05-30T22:11:21.011445", "event": "TASK_CREATED", "task_id": 2, "data": {"title": "משימת אודיט ב", "priority": 2, "status": "Pending"}}
+{"timestamp": "2026-05-30T22:11:21.011560", "event": "TASK_COMPLETED", "task_id": 1, "data": {"title": "משימת אודיט א", "priority": 1, "status": "Completed"}}
+{"timestamp": "2026-05-30T22:11:21.011646", "event": "TASK_DELETED", "task_id": 2, "data": {"title": "משימת אודיט ב", "priority": 2, "status": "Pending"}}

@@ -118,3 +118,21 @@
 2026-05-30 22:04:59,708 [INFO] TaskEngine loaded 5 tasks from tasks.json
 2026-05-30 22:04:59,708 [INFO] TaskEngine loaded 1 tasks from tasks.json
 2026-05-30 22:04:59,708 [INFO] TaskEngine: snapshot restored — tasks_2026-01-01_00-00-07.json
+2026-05-30 22:10:50,302 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:10:50,302 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:10:50,302 [INFO] TaskEngine loaded 1 tasks from tasks.json
+2026-05-30 22:10:50,303 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:10:50,303 [INFO] TaskService: new task added — name='משימת אודיט א' priority=1
+2026-05-30 22:10:50,303 [INFO] TaskService: new task added — name='משימת אודיט ב' priority=2
+2026-05-30 22:11:21,010 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:11:21,010 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:11:21,011 [INFO] TaskEngine loaded 0 tasks from tasks.json
+2026-05-30 22:11:21,011 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:11:21,011 [INFO] TaskService: new task added — name='משימת אודיט א' priority=1
+2026-05-30 22:11:21,011 [INFO] TaskService: new task added — name='משימת אודיט ב' priority=2
+2026-05-30 22:11:21,011 [INFO] TaskService: task marked completed — name='משימת אודיט א'
+2026-05-30 22:11:21,011 [INFO] TaskService: task deleted — name='משימת אודיט ב'
+2026-05-30 22:11:21,011 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-11-21.json
+2026-05-30 22:11:21,011 [INFO] TaskEngine: snapshot deleted (retention policy, max=10) — tasks_2026-01-01_00-00-07.json
+2026-05-30 22:11:21,012 [INFO] TaskEngine saved 1 tasks to tasks.json (atomic write) [0.166ms]
+2026-05-30 22:11:21,012 [INFO] CLIAppShell: application shutdown — 1 tasks saved
