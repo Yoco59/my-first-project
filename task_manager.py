@@ -4,6 +4,8 @@ tasks = [
     {"name": "Deploy security patch",        "priority": 1},
     {"name": "Update documentation",         "priority": 3},
     {"name": "Code review for new feature",  "priority": 2},
+    {"name": "סגירת בנק הדואר",              "priority": 1},
+    {"name": "ספורט",                         "priority": 3},
 ]
 
 PRIORITY_LABELS = {1: "Urgent", 2: "Medium", 3: "Low"}
