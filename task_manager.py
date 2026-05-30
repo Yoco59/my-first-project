@@ -34,7 +34,7 @@ while True:
 
 # שלב העיבוד והמיון - מתבצע רק לאחר היציאה מהלולאה (כשהמשתמש הקליד exit)
 print("\n--- הפקת תוכנית עבודה ממוינת ---")
-sorted_tasks = sorted(tasks, key=lambda x: x["priority"])
+sorted_tasks = sorted(tasks, key=lambda x: x["priority"], reverse=True)
 
 # הדפסת התוצאה הסופית בצורה ממוספרת
 for index, task in enumerate(sorted_tasks, 1):
