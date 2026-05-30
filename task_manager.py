@@ -45,11 +45,22 @@ def load_tasks_from_file():
         return []
 
 
+TEMP_FILE_NAME = "tasks.tmp"
+
+
 def save_tasks_to_file(tasks):
-    # json.dump ממיר את רשימת המילונים לפורמט JSON ושופך אותה לקובץ.
-    # ensure_ascii=False שומר עברית כטקסט קריא. indent=2 מעצב את הפלט.
-    with open(FILE_NAME, "w", encoding="utf-8") as f:
-        json.dump(tasks, f, ensure_ascii=False, indent=2)
+    # שלב 1: כותבים את כל המידע לקובץ זמני — לא לקובץ האמיתי.
+    # אם הכתיבה תיכשל באמצע (נפילת חשמל, דיסק מלא), הקובץ המקורי tasks.json
+    # נשאר שלם ולא נפגע — עדיין מכיל את הגרסה האחרונה התקינה.
+    with open(TEMP_FILE_NAME, "w", encoding="utf-8") as f:
+        # indent=4 מייצר JSON מסודר עם 4 רווחי הזחה — קריא יותר לעין אנושית.
+        json.dump(tasks, f, ensure_ascii=False, indent=4)
+
+    # שלב 2: os.replace מבצע החלפה אטומית ברמת מערכת ההפעלה —
+    # הקובץ הזמני מוחלף בקובץ המקורי בפעולה אחת בלתי-ניתנת-לחלוקה.
+    # לא קיים מצב ביניים שבו tasks.json חסר או חלקי:
+    # כל קורא אחר יראה תמיד גרסה שלמה — לפני ההחלפה או אחריה.
+    os.replace(TEMP_FILE_NAME, FILE_NAME)
     print(f"✔ {len(tasks)} משימות נשמרו בהצלחה לקובץ {FILE_NAME}\n")
 
 
