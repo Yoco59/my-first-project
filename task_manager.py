@@ -73,31 +73,42 @@ if len(tasks) > 0:
 else:
     print("מערכת המשימות ריקה. אין משימות שמורות בארכיון.")
 
-print("--- מנוע המשימות האינטראקטיבי הופעל ---")
-print("הקלד 'exit' בשם המשימה כדי לסיים ולראות את התוצאה הממוינת.\n")
+def show_menu():
+    print("\n=============================")
+    print("   מנהל המשימות — תפריט ראשי")
+    print("=============================")
+    print("[1] הצגת כל המשימות")
+    print("[2] הוספת משימה חדשה")
+    print("[3] יציאה מהתוכנית")
+    print("=============================")
 
-# לולאה ראשית - תמשיך לרוץ ללא הפסקה עד שתתקבל פקודת יציאה
-while True:
-    task_name = input("הכנס שם משימה: ")
 
-    # בדיקת תנאי עצירה: הפיכת הקלט לאותיות קטנות (lower) כדי לזהות גם EXIT או Exit
-    if task_name.lower() == 'exit':
-        # שמירה אוטומטית לפני הדפסת הדוח
-        save_tasks_to_file(tasks)
-        break
+def show_all_tasks(tasks):
+    if not tasks:
+        print("\nאין משימות להצגה.")
+        return
+    print("\n--- רשימת המשימות הממוינת ---")
+    sorted_tasks = sorted(tasks, key=lambda x: x["priority"], reverse=True)
+    for index, task in enumerate(sorted_tasks, 1):
+        status = "Urgent" if task["priority"] == 1 else "Medium" if task["priority"] == 2 else "Low"
+        created = task.get("created_at", "לא ידוע")
+        print(f"{index}. [{status}] {task['name']}  |  נוצר: {created}")
+
+
+def add_task(tasks):
+    task_name = input("\nהכנס שם משימה: ").strip()
+    if not task_name:
+        print("⚠ שם המשימה לא יכול להיות ריק.")
+        return
 
     # לולאה פנימית מוגנת לקליטת רמת העדיפות
     while True:
         try:
-            # ניסיון להפוך את הקלט למספר שלם (Integer)
             priority = int(input("הכנס רמת עדיפות (1 - דחוף, 2 - בינוני, 3 - נמוך): "))
-
-            # בדיקה האם המספר שהוכנס נמצא בטווח המותר (1 עד 3)
             if priority in [1, 2, 3]:
-                break  # הקלט תקין! יוצאים מהלולאה הפנימית וממשיכים למשימה הבאה
+                break
             else:
                 print("⚠ שגיאה: יש להזין מספר בין 1 ל-3 בלבד.")
-
         except ValueError:
             # מנגנון הגנה: אם המשתמש הקליד אותיות, ה-int() ייכשל והקוד יגיע לכאן במקום לקרוס
             print("⚠ חסימת שגיאה: קלט לא חוקי! נא להזין מספר (1, 2 או 3) ולא טקסט.")
@@ -108,14 +119,29 @@ while True:
         "priority": priority,
         "created_at": datetime.now().isoformat()
     })
-    print(f"✔ המשימה '{task_name}' נקלטה במערכת.\n")
+    print(f"✔ המשימה '{task_name}' נקלטה במערכת.")
 
-# שלב העיבוד והמיון - מתבצע רק לאחר היציאה מהלולאה (כשהמשתמש הקליד exit)
-print("--- הפקת תוכנית עבודה ממוינת ---")
-sorted_tasks = sorted(tasks, key=lambda x: x["priority"], reverse=True)
 
-# הדפסת התוצאה הסופית בצורה ממוספרת, כולל תאריך יצירה
-for index, task in enumerate(sorted_tasks, 1):
-    status = "Urgent" if task["priority"] == 1 else "Medium" if task["priority"] == 2 else "Low"
-    created = task.get("created_at", "לא ידוע")
-    print(f"{index}. [{status}] {task['name']}  |  נוצר: {created}")
+print("--- מנוע המשימות האינטראקטיבי הופעל ---")
+
+# לולאה ראשית — רצה ללא הפסקה ומציגה תפריט בכל סיבוב עד שהמשתמש בוחר יציאה
+while True:
+    show_menu()
+    try:
+        # try-except מגן מפני קלט שאינו מספר כלל (אות, רווח, Enter ריק)
+        # ללא הגנה זו, int() היה קורס עם ValueError ומסיים את התוכנית
+        choice = int(input("בחר פעולה (1-3): "))
+    except ValueError:
+        print("⚠ קלט לא חוקי — יש להקיש מספר בין 1 ל-3.")
+        continue  # חוזרים לתחילת הלולאה ומציגים את התפריט מחדש
+
+    if choice == 1:
+        show_all_tasks(tasks)
+    elif choice == 2:
+        add_task(tasks)
+    elif choice == 3:
+        save_tasks_to_file(tasks)
+        print("להתראות!")
+        break
+    else:
+        print("⚠ בחירה לא חוקית — אנא בחר 1, 2 או 3.")
