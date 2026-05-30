@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import shutil
 import time
 from datetime import datetime
 
@@ -18,6 +19,8 @@ FILE_NAME = "tasks.json"
 TEMP_FILE_NAME = "tasks.tmp"
 CORRUPTED_FILE_NAME = "tasks_corrupted.json"
 CONFIG_FILE = "config.json"
+BACKUP_DIR = "backups"
+MAX_SNAPSHOTS = 10
 
 # ברירות מחדל — בשימוש אם config.json חסר או פגום
 _DEFAULT_CONFIG = {
@@ -39,6 +42,8 @@ class TaskEngine:
         _logger.info("TaskEngine initializing — application startup")
         # קונפיגורציה נטענת ראשונה — כל שאר השכבות יסתמכו עליה
         self.config = self._load_config()
+        # תיקיית הגיבויים נוצרת בהפעלה — exist_ok מונע שגיאה אם כבר קיימת
+        os.makedirs(BACKUP_DIR, exist_ok=True)
         self._tasks = self._load_from_disk()
 
     def _load_config(self) -> dict:
@@ -91,9 +96,68 @@ class TaskEngine:
             print("🔄 מאתחל רשימת משימות חדשה ונקייה...\n")
             return []
 
+    # ─── Versioned Snapshots Engine ──────────────────────────────────────────
+    # כל לוגיקת הגיבויים חיה כאן בלבד — TaskService ו-CLIAppShell אינן מודעות לה.
+
+    def _create_snapshot(self):
+        """מצלם את tasks.json הנוכחי לפני כל כתיבה — כך ניתן לשחזר כל מצב קודם."""
+        try:
+            if not os.path.exists(FILE_NAME):
+                return  # אין מה לגבות בהפעלה הראשונה
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            dest = os.path.join(BACKUP_DIR, f"tasks_{timestamp}.json")
+            shutil.copy2(FILE_NAME, dest)
+            _logger.info(f"TaskEngine: snapshot created — {dest}")
+            self._cleanup_snapshots()
+        except Exception as exc:
+            # כישלון גיבוי לעולם לא יפיל את המערכת — רק יירשם ביומן
+            _logger.error(f"TaskEngine: snapshot creation failed — {exc}")
+
+    def _cleanup_snapshots(self):
+        """מחיקת ה-snapshots הישנים ביותר כדי לשמור לכל היותר MAX_SNAPSHOTS קבצים."""
+        try:
+            files = sorted(
+                f for f in os.listdir(BACKUP_DIR)
+                if f.startswith("tasks_") and f.endswith(".json")
+            )
+            # FIFO — נמחק מהקצה הישן עד שנגיע למגבלה
+            while len(files) > MAX_SNAPSHOTS:
+                oldest = files.pop(0)
+                os.remove(os.path.join(BACKUP_DIR, oldest))
+                _logger.info(f"TaskEngine: snapshot deleted (retention policy, max={MAX_SNAPSHOTS}) — {oldest}")
+        except Exception as exc:
+            _logger.error(f"TaskEngine: snapshot cleanup failed — {exc}")
+
+    def restore_snapshot(self, snapshot_file: str) -> bool:
+        """מחליף את tasks.json בתמונת מצב נבחרת וטוען מחדש את הזיכרון."""
+        try:
+            src = os.path.join(BACKUP_DIR, snapshot_file)
+            if not os.path.exists(src):
+                _logger.error(f"TaskEngine: restore failed — snapshot not found: {src}")
+                return False
+            shutil.copy2(src, FILE_NAME)
+            self._tasks = self._load_from_disk()
+            _logger.info(f"TaskEngine: snapshot restored — {snapshot_file}")
+            return True
+        except Exception as exc:
+            _logger.error(f"TaskEngine: restore failed — {exc}")
+            return False
+
+    def list_snapshots(self) -> list:
+        """מחזיר רשימת שמות ה-snapshots הזמינים, ממוינת מהחדש לישן."""
+        try:
+            return sorted(
+                (f for f in os.listdir(BACKUP_DIR)
+                 if f.startswith("tasks_") and f.endswith(".json")),
+                reverse=True,
+            )
+        except Exception:
+            return []
+
     def save_to_disk(self):
-        # כתיבה אטומית: קודם לקובץ זמני, ואז os.replace מחליף בפעולה אחת בלתי-ניתנת-לחלוקה.
-        # כך לעולם לא יהיה קובץ חלקי אם הכתיבה תיכשל באמצע.
+        # שלב 1: מצלם את המצב הנוכחי לפני שנדרס — כך כל שמירה יוצרת נקודת שחזור
+        self._create_snapshot()
+        # שלב 2: כתיבה אטומית — קודם לקובץ זמני, ואז os.replace בפעולה אחת.
         _t0 = time.perf_counter()
         with open(TEMP_FILE_NAME, "w", encoding="utf-8") as f:
             json.dump(self._tasks, f, ensure_ascii=False, indent=4)
