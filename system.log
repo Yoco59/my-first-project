@@ -1,0 +1,7 @@
+2026-05-30 21:56:00,886 [INFO] TaskEngine initializing — application startup
+2026-05-30 21:56:00,887 [INFO] TaskEngine loaded 1 tasks from tasks.json
+2026-05-30 21:56:00,887 [INFO] CLIAppShell: event loop started
+2026-05-30 21:56:00,887 [INFO] TaskService: new task added — name='משימת טלמטריה' priority=1
+2026-05-30 21:56:00,887 [INFO] TaskService: task marked completed — name='בדיקת OOP'
+2026-05-30 21:56:00,887 [INFO] TaskEngine saved 2 tasks to tasks.json (atomic write)
+2026-05-30 21:56:00,887 [INFO] CLIAppShell: application shutdown — 2 tasks saved
