@@ -1,19 +1,120 @@
-2026-05-30 21:56:00,886 [INFO] TaskEngine initializing — application startup
-2026-05-30 21:56:00,887 [INFO] TaskEngine loaded 1 tasks from tasks.json
-2026-05-30 21:56:00,887 [INFO] CLIAppShell: event loop started
-2026-05-30 21:56:00,887 [INFO] TaskService: new task added — name='משימת טלמטריה' priority=1
-2026-05-30 21:56:00,887 [INFO] TaskService: task marked completed — name='בדיקת OOP'
-2026-05-30 21:56:00,887 [INFO] TaskEngine saved 2 tasks to tasks.json (atomic write)
-2026-05-30 21:56:00,887 [INFO] CLIAppShell: application shutdown — 2 tasks saved
-2026-05-30 21:58:48,118 [INFO] TaskEngine initializing — application startup
-2026-05-30 21:58:48,118 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
-2026-05-30 21:58:48,118 [INFO] TaskEngine loaded 2 tasks from tasks.json
-2026-05-30 21:58:48,118 [INFO] CLIAppShell: event loop started — edition=Enterprise
-2026-05-30 21:58:48,118 [INFO] TaskService: new task added — name='משימה א' priority=1
-2026-05-30 21:58:48,118 [INFO] TaskService: new task added — name='משימה ב' priority=2
-2026-05-30 21:58:48,118 [INFO] TaskService: new task added — name='משימה ג' priority=3
-2026-05-30 21:58:48,119 [WARNING] TaskService: add blocked — reached max_tasks_limit (5)
-2026-05-30 21:58:48,119 [WARNING] TaskService: add blocked — reached max_tasks_limit (5)
-2026-05-30 21:58:48,119 [WARNING] TaskService: add blocked — reached max_tasks_limit (5)
-2026-05-30 21:58:48,119 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.234ms]
-2026-05-30 21:58:48,119 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:31,949 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:31,949 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:31,949 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:31,949 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:31,949 [WARNING] TaskService: add blocked — reached max_tasks_limit (5)
+2026-05-30 22:04:31,949 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-31.json
+2026-05-30 22:04:31,950 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.239ms]
+2026-05-30 22:04:31,950 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:31,988 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:31,988 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:31,988 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:31,988 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:31,988 [WARNING] TaskService: add blocked — reached max_tasks_limit (5)
+2026-05-30 22:04:31,988 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-31.json
+2026-05-30 22:04:31,988 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.205ms]
+2026-05-30 22:04:31,989 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:32,025 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:32,025 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:32,026 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:32,026 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:32,026 [WARNING] TaskService: add blocked — reached max_tasks_limit (5)
+2026-05-30 22:04:32,026 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-32.json
+2026-05-30 22:04:32,026 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.418ms]
+2026-05-30 22:04:32,026 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:41,096 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:41,096 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:41,096 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:41,096 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:41,096 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-41.json
+2026-05-30 22:04:41,096 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.253ms]
+2026-05-30 22:04:41,097 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:41,187 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:41,188 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:41,188 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:41,188 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:41,188 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-41.json
+2026-05-30 22:04:41,188 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.260ms]
+2026-05-30 22:04:41,189 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:41,279 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:41,279 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:41,279 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:41,279 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:41,279 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-41.json
+2026-05-30 22:04:41,279 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.190ms]
+2026-05-30 22:04:41,279 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:41,367 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:41,367 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:41,367 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:41,367 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:41,367 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-41.json
+2026-05-30 22:04:41,368 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.189ms]
+2026-05-30 22:04:41,368 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:41,457 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:41,457 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:41,457 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:41,457 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:41,457 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-41.json
+2026-05-30 22:04:41,457 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.188ms]
+2026-05-30 22:04:41,457 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:41,545 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:41,545 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:41,545 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:41,545 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:41,546 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-41.json
+2026-05-30 22:04:41,546 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.221ms]
+2026-05-30 22:04:41,546 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:41,637 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:41,637 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:41,637 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:41,637 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:41,637 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-41.json
+2026-05-30 22:04:41,638 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.182ms]
+2026-05-30 22:04:41,638 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:41,725 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:41,725 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:41,725 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:41,726 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:41,726 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-41.json
+2026-05-30 22:04:41,726 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.169ms]
+2026-05-30 22:04:41,726 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:41,813 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:41,813 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:41,813 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:41,813 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:41,813 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-41.json
+2026-05-30 22:04:41,813 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.226ms]
+2026-05-30 22:04:41,813 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:41,900 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:41,900 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:41,900 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:41,900 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:41,901 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-41.json
+2026-05-30 22:04:41,901 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.191ms]
+2026-05-30 22:04:41,901 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:41,989 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:41,989 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:41,990 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:41,990 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:41,990 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-41.json
+2026-05-30 22:04:41,990 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.172ms]
+2026-05-30 22:04:41,990 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:42,077 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:42,078 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:42,078 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:42,078 [INFO] CLIAppShell: event loop started — edition=Enterprise
+2026-05-30 22:04:42,078 [INFO] TaskEngine: snapshot created — backups/tasks_2026-05-30_22-04-42.json
+2026-05-30 22:04:42,078 [INFO] TaskEngine saved 5 tasks to tasks.json (atomic write) [0.208ms]
+2026-05-30 22:04:42,079 [INFO] CLIAppShell: application shutdown — 5 tasks saved
+2026-05-30 22:04:52,633 [INFO] TaskEngine: snapshot deleted (retention policy, max=10) — tasks_2026-01-01_00-00-00.json
+2026-05-30 22:04:52,633 [INFO] TaskEngine: snapshot deleted (retention policy, max=10) — tasks_2026-01-01_00-00-01.json
+2026-05-30 22:04:52,633 [INFO] TaskEngine: snapshot deleted (retention policy, max=10) — tasks_2026-01-01_00-00-02.json
+2026-05-30 22:04:52,633 [INFO] TaskEngine: snapshot deleted (retention policy, max=10) — tasks_2026-01-01_00-00-03.json
+2026-05-30 22:04:52,633 [INFO] TaskEngine: snapshot deleted (retention policy, max=10) — tasks_2026-01-01_00-00-04.json
+2026-05-30 22:04:52,633 [INFO] TaskEngine: snapshot deleted (retention policy, max=10) — tasks_2026-01-01_00-00-05.json
+2026-05-30 22:04:52,633 [INFO] TaskEngine: snapshot deleted (retention policy, max=10) — tasks_2026-01-01_00-00-06.json
+2026-05-30 22:04:59,708 [INFO] TaskEngine initializing — application startup
+2026-05-30 22:04:59,708 [INFO] TaskEngine: config loaded — edition=Enterprise max_tasks=5 perf_tracking=True
+2026-05-30 22:04:59,708 [INFO] TaskEngine loaded 5 tasks from tasks.json
+2026-05-30 22:04:59,708 [INFO] TaskEngine loaded 1 tasks from tasks.json
+2026-05-30 22:04:59,708 [INFO] TaskEngine: snapshot restored — tasks_2026-01-01_00-00-07.json
